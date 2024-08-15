@@ -7,3 +7,9 @@
 #define play_pause_button 33
 
 #define led_pin 2
+
+#define ws2812_PIN 15
+#define NUM_LEDS 3
+
+#define max_layer 3
+#define max_light_mode 6
