@@ -48,6 +48,9 @@ int fixed_hue;
 int last_animation_speed;
 int last_fixed_hue;
 
+int animation_speed_change[] = {0, 1, 2, 6, 7, 10};
+int hue_change[] = {4, 5, 7, 9, 11};
+
 void setup() {
   Serial.begin(115200);
   EEPROM.begin(512);
@@ -214,15 +217,22 @@ void light_setting ()
   {
     static long pos_diff;
     pos_diff = newPosition - last_pos;
-    if (light_mode == 0 || light_mode == 1 || light_mode == 2)
+    for (int i = 0; i < 6; i++)
     {
-      animation_speed = animation_speed + pos_diff;
-      animation_speed = constrain(animation_speed, 0, 200);
+      Serial.println(i);
+      if (light_mode == animation_speed_change[i])
+      {
+        animation_speed = animation_speed + pos_diff;
+        animation_speed = constrain(animation_speed, 0, 2000);
+      }
     }
-    else if (light_mode == 3 || light_mode == 4)
+    for (int i = 0; i < 5; i++)
     {
-      fixed_hue = fixed_hue + pos_diff;
-      fixed_hue = constrain(fixed_hue, 0, 255);
+      if (light_mode == hue_change[i])
+      {
+        fixed_hue = fixed_hue + pos_diff;
+        fixed_hue = constrain(fixed_hue, 0, 255);
+      }
     }
     last_pos = newPosition;
   }
@@ -255,6 +265,10 @@ void light_show(int mode)
 {
   static unsigned long last_delay;
   static uint8_t hue;
+  static int saturation;
+  static bool pwm_flag;
+  static int led_index;
+  static int last_led_index;
   switch (mode)
   {
   case 0:
@@ -286,8 +300,33 @@ void light_show(int mode)
     FastLED.show();
     break;
   case 3:
-    static int saturation;
-    static bool pwm_flag;
+    if ((millis() - last_delay) > 5)
+    {
+      if (saturation >= 0 && saturation <= 255 &! pwm_flag)
+      {
+        saturation += 1;
+        if (saturation >= 255)
+        {
+          pwm_flag = true;
+          hue += 10;
+          }
+      }
+      if (saturation <= 255 && saturation >= 0 && pwm_flag)
+      {
+        saturation -= 1;
+        if (saturation <= 0)
+        {
+          pwm_flag = false;
+          hue += 10;
+          }
+      }
+      saturation = constrain(saturation, 0, 1023);
+      fill_solid(leds, 3, CHSV(hue, 255, saturation));
+      FastLED.show();
+      last_delay = millis();
+    }
+    break;
+  case 4:
     if ((millis() - last_delay) > 5)
     {
       if (saturation >= 0 && saturation <= 255 &! pwm_flag)
@@ -307,9 +346,136 @@ void light_show(int mode)
       last_delay = millis();
     }
     break;
-  case 4:
+  case 5:
     fill_solid(leds, 3, CHSV(fixed_hue, 255, 255));
     FastLED.show();
+    break;
+  case 6:
+    if ((millis() - last_delay) > animation_speed)
+    {
+      if (led_index >= 0 && led_index <= 3 &! pwm_flag)
+      {
+        led_index += 1;
+        if (led_index >= 3)
+        {
+          pwm_flag = true;
+          }
+      }
+      led_index = constrain(led_index, 0, 2);
+      if (led_index <= 3 && led_index >= 0 && pwm_flag)
+      {
+        led_index -= 1;
+        if (led_index <= 0)
+        {
+          pwm_flag = false;
+          }
+      }
+      led_index = constrain(led_index, 0, 2);
+      hue += 10;
+      leds[led_index-1] = CHSV(hue, 255, 0);
+      leds[led_index] = CHSV(hue, 255, 255);
+      leds[led_index+1] = CHSV(hue, 255, 0);
+      FastLED.show();
+      last_delay = millis();
+    }
+    break;
+  case 7:
+        if ((millis() - last_delay) > animation_speed)
+    {
+      if (led_index >= 0 && led_index <= 3 &! pwm_flag)
+      {
+        led_index += 1;
+        if (led_index >= 3)
+        {
+          pwm_flag = true;
+          }
+      }
+      led_index = constrain(led_index, 0, 2);
+      if (led_index <= 3 && led_index >= 0 && pwm_flag)
+      {
+        led_index -= 1;
+        if (led_index <= 0)
+        {
+          pwm_flag = false;
+          }
+      }
+      led_index = constrain(led_index, 0, 2);
+      leds[led_index-1] = CHSV(fixed_hue, 255, 0);
+      leds[led_index] = CHSV(fixed_hue, 255, 255);
+      leds[led_index+1] = CHSV(fixed_hue, 255, 0);
+      FastLED.show();
+      last_delay = millis();
+    }
+    break;
+  case 8:
+    if ((millis() - last_delay) > animation_speed)
+    {
+      led_index += 1;
+      if (led_index >= 3)
+      {
+        led_index = 0;
+      }
+      led_index = constrain(led_index, 0, 2);
+      Serial.println(led_index);
+      leds[last_led_index] = CHSV(hue, 255, 0);
+      leds[led_index] = CHSV(hue, 255, 255);
+      last_led_index = led_index;
+      FastLED.show();
+      last_delay = millis();
+    }
+    break;
+  case 9:
+    if ((millis() - last_delay) > animation_speed)
+    {
+      led_index += 1;
+      if (led_index >= 3)
+      {
+        led_index = 0;
+      }
+      led_index = constrain(led_index, 0, 2);
+      Serial.println(led_index);
+      leds[last_led_index] = CHSV(fixed_hue, 255, 0);
+      leds[led_index] = CHSV(fixed_hue, 255, 255);
+      last_led_index = led_index;
+      FastLED.show();
+      last_delay = millis();
+    }
+    break;
+  case 10:
+    if ((millis() - last_delay) > animation_speed)
+    {
+      led_index -= 1;
+      if (led_index <= -1)
+      {
+        led_index = 2;
+      }
+      led_index = constrain(led_index, 0, 2);
+      hue += 10;
+      Serial.println(led_index);
+      leds[last_led_index] = CHSV(hue, 255, 0);
+      leds[led_index] = CHSV(hue, 255, 255);
+      last_led_index = led_index;
+      FastLED.show();
+      last_delay = millis();
+    }
+    break;
+  case 11:
+    if ((millis() - last_delay) > animation_speed)
+    {
+      led_index -= 1;
+      if (led_index <= -1)
+      {
+        led_index = 2;
+      }
+      led_index = constrain(led_index, 0, 2);
+      hue += 10;
+      Serial.println(led_index);
+      leds[last_led_index] = CHSV(fixed_hue, 255, 0);
+      leds[led_index] = CHSV(fixed_hue, 255, 255);
+      last_led_index = led_index;
+      FastLED.show();
+      last_delay = millis();
+    }
     break;
   case max_light_mode-1:
     fill_solid(leds, 3, CRGB::Black);

@@ -12,4 +12,4 @@
 #define NUM_LEDS 3
 
 #define max_layer 3
-#define max_light_mode 6
+#define max_light_mode 13
