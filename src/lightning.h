@@ -1,0 +1,10 @@
+void buttonLED_fade();
+void start_light_setting();
+void light_setting ();
+void end_light_setting();
+void start_light_change();
+void change_mode_light();
+void end_light_change();
+void lighning_setup();
+void light_show(int mode);
+void layer_light(int mode);

@@ -1,0 +1,10 @@
+void ble_setup();
+bool isConnected();
+void start_layer_change();
+void end_layer_change();
+void key_layer_switch();
+void media_layer();
+void mute();
+void next_track();
+void previous_track();
+void play_pause();
