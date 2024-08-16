@@ -68,7 +68,7 @@ void EEPROMWritelong(int address, long value)
     // ee.writeByte(address + 3, one);
 }
 
-void save_data(long rainbow_animation, long hue_animation, long fade_animation, long fixed_hue, long running_animation, long layer)
+void save_data(long rainbow_animation, long hue_animation, long fade_animation, long fixed_hue, long running_animation, long layer, long light_mode)
 {
     EEPROMWritelong(0, rainbow_animation);
     EEPROMWritelong(5, hue_animation);
@@ -76,6 +76,7 @@ void save_data(long rainbow_animation, long hue_animation, long fade_animation, 
     EEPROMWritelong(15, running_animation);
     EEPROMWritelong(20, fixed_hue);
     EEPROMWritelong(25, layer);
+    EEPROMWritelong(30, light_mode);
 }
 
 void restore_data()
@@ -86,10 +87,12 @@ void restore_data()
     fade_animation = EEPROMReadlong(10);
     hue_animation = EEPROMReadlong(5);
     running_animation = EEPROMReadlong(15);
+    light_mode = EEPROMReadlong(30);
     last_key_layer = key_layer;
     last_fixed_hue = fixed_hue;
     last_rainbow_animation = rainbow_animation;
     last_hue_animation = hue_animation;
     last_running_animation = running_animation;
     last_fade_animation = fade_animation;
+    last_light_mode = light_mode;
 }

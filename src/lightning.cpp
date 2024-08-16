@@ -185,7 +185,7 @@ void end_light_setting()
 void end_light_change()
 {
     if (last_light_mode != light_mode){
-        // EEPROM.write(0, light_mode);
+        EEPROMWritelong(30, light_mode);
         last_light_mode = light_mode;
     }
     mode_change = false;
