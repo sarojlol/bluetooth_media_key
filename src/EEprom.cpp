@@ -33,51 +33,43 @@ extern int last_running_animation;
 
 void eeprom_setup()
 {
-    // while (!Serial);  //  wait for Serial port to connect. Needed for Leonardo only
-    // Serial.println(__FILE__);
-    // Serial.print("I2C_EEPROM_VERSION: ");
-    // Serial.println(I2C_EEPROM_VERSION);
-
-    // Wire.begin();
-
-    // ee.begin();
-    // ee.writeByte(2, 5);
-    // Serial.println(ee.readByte(2));
+    Wire.begin();
+    ee.begin();
 }
 
 long EEPROMReadlong(long address) 
 {
-    // long four = ee.readByte(address);
-    // long three = ee.readByte(address + 1);
-    // long two = ee.readByte(address + 2);
-    // long one = ee.readByte(address + 3);
+    long four = ee.readByte(address);
+    long three = ee.readByte(address + 1);
+    long two = ee.readByte(address + 2);
+    long one = ee.readByte(address + 3);
     
-    // return ((four << 0) & 0xFF) + ((three << 8) & 0xFFFF) + ((two << 16) & 0xFFFFFF) + ((one << 24) & 0xFFFFFFFF);
+    return ((four << 0) & 0xFF) + ((three << 8) & 0xFFFF) + ((two << 16) & 0xFFFFFF) + ((one << 24) & 0xFFFFFFFF);
 }
 
 void EEPROMWritelong(int address, long value) 
 {
-    // byte four = (value & 0xFF);
-    // byte three = ((value >> 8) & 0xFF);
-    // byte two = ((value >> 16) & 0xFF);
-    // byte one = ((value >> 24) & 0xFF);
+    byte four = (value & 0xFF);
+    byte three = ((value >> 8) & 0xFF);
+    byte two = ((value >> 16) & 0xFF);
+    byte one = ((value >> 24) & 0xFF);
     
-    // ee.writeByte(address, four);
-    // ee.writeByte(address + 1, three);
-    // ee.writeByte(address + 2, two);
-    // ee.writeByte(address + 3, one);
+    ee.writeByte(address, four);
+    ee.writeByte(address + 1, three);
+    ee.writeByte(address + 2, two);
+    ee.writeByte(address + 3, one);
 }
 
-void save_data(long rainbow_animation, long hue_animation, long fade_animation, long fixed_hue, long running_animation, long layer, long light_mode)
-{
-    EEPROMWritelong(0, rainbow_animation);
-    EEPROMWritelong(5, hue_animation);
-    EEPROMWritelong(10, fade_animation);
-    EEPROMWritelong(15, running_animation);
-    EEPROMWritelong(20, fixed_hue);
-    EEPROMWritelong(25, layer);
-    EEPROMWritelong(30, light_mode);
-}
+// void save_data(long rainbow_animation, long hue_animation, long fade_animation, long fixed_hue, long running_animation, long layer, long light_mode)
+// {
+//     EEPROMWritelong(0, rainbow_animation);
+//     EEPROMWritelong(5, hue_animation);
+//     EEPROMWritelong(10, fade_animation);
+//     EEPROMWritelong(15, running_animation);
+//     EEPROMWritelong(20, fixed_hue);
+//     EEPROMWritelong(25, layer);
+//     EEPROMWritelong(30, light_mode);
+// }
 
 void restore_data()
 {

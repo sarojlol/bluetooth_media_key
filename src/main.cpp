@@ -42,7 +42,7 @@ extern int last_running_animation;
 void setup() {
   Serial.begin(115200);
   eeprom_setup();
-  // restore_data();
+  restore_data();
   last_light_mode = light_mode;
   last_key_layer = key_layer;
 
